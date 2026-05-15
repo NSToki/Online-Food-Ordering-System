@@ -1,0 +1,253 @@
+<?php
+// This view only handles UI.
+// Database, session, and authentication logic stay in controller.
+
+$email = $email ?? "";
+$errors = $errors ?? [];
+$successMessage = $successMessage ?? "";
+?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Delivery Agent Login</title>
+
+    <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body{
+            background-color: #f4f6f9;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container{
+            width: 400px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        .login-container h2{
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group{
+            margin-bottom: 18px;
+        }
+
+        .form-group label{
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+            font-weight: bold;
+        }
+
+        .form-group input{
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus{
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .error{
+            color: red;
+            font-size: 13px;
+        }
+
+        .success{
+            color: green;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .remember-box{
+            margin-bottom: 18px;
+        }
+
+        .login-btn{
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover{
+            background-color: #0056b3;
+        }
+
+        .bottom-text{
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .bottom-text a{
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .bottom-text a:hover{
+            text-decoration: underline;
+        }
+
+        .main-error{
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <h2>Delivery Agent Login</h2>
+
+        <?php if (!empty($successMessage)): ?>
+            <p class="success">
+                <?php echo htmlspecialchars($successMessage); ?>
+            </p>
+        <?php endif; ?>
+
+        <?php if (isset($errors["login"])): ?>
+            <p class="main-error">
+                <?php echo htmlspecialchars($errors["login"]); ?>
+            </p>
+        <?php endif; ?>
+
+        <form id="loginForm"
+              action="../../controllers/DeliveryAgentController.php?action=login"
+              method="post">
+
+            <div class="form-group">
+
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value="<?php echo htmlspecialchars($email); ?>" required 
+                >
+
+                <span class="error" id="emailError">
+                    <?php echo $errors["email"] ?? ""; ?>
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    required
+                >
+
+                <span class="error" id="passwordError">
+                    <?php echo $errors["password"] ?? ""; ?>
+                </span>
+
+            </div>
+
+            <div class="remember-box">
+
+                <input
+                    type="checkbox"
+                    name="remember_me"
+                    id="remember_me"
+                    value="1"
+                >
+
+                <label for="remember_me">Remember Me</label>
+
+            </div>
+
+            <button type="submit" class="login-btn">
+                Login
+            </button>
+
+        </form>
+
+        <div class="bottom-text">
+            Don’t have an account?
+            <a href="register.php">Register Here</a>
+        </div>
+
+    </div>
+
+    <script>
+
+        document.getElementById("loginForm").addEventListener("submit", function(event){
+
+            let isValid = true;
+
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
+
+            let emailError = document.getElementById("emailError");
+            let passwordError = document.getElementById("passwordError");
+
+            emailError.innerHTML = "";
+            passwordError.innerHTML = "";
+
+            // Email Validation
+            if(email === ""){
+                emailError.innerHTML = "Email is required";
+                isValid = false;
+            }
+            else if(!email.includes("@") || !email.includes(".")){
+                emailError.innerHTML = "Enter valid email";
+                isValid = false;
+            }
+
+            // Password Validation
+            if(password === ""){
+                passwordError.innerHTML = "Password is required";
+                isValid = false;
+            }
+            else if(password.length < 8){
+                passwordError.innerHTML = "Password must be at least 8 characters";
+                isValid = false;
+            }
+
+            if(!isValid){
+                event.preventDefault();
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
