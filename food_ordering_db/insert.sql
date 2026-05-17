@@ -234,3 +234,60 @@ VALUES
 ('max_delivery_radius', '10'),
 ('estimated_delivery_time', '30'),
 ('platform_name', 'FoodExpress');
+
+
+INSERT INTO orders (
+    customer_id,
+    restaurant_id,
+    agent_id,
+    delivery_address,
+    payment_method,
+    subtotal,
+    delivery_fee,
+    total_amount,
+    status,
+    estimated_delivery_minutes,
+    created_at
+) VALUES
+
+(
+    2,
+    1,
+    NULL,
+    'Dhanmondi 27, Dhaka',
+    'Cash',
+    450.00,
+    60.00,
+    510.00,
+    'ready',
+    30,
+    NOW()
+),
+
+(
+    3,
+    2,
+    NULL,
+    'Mirpur DOHS, Dhaka',
+    'Card',
+    700.00,
+    80.00,
+    780.00,
+    'ready',
+    40,
+    NOW()
+),
+
+(
+    2,
+    3,
+    NULL,
+    'Uttara Sector 10, Dhaka',
+    'Cash',
+    300.00,
+    50.00,
+    350.00,
+    'ready',
+    25,
+    NOW()
+);

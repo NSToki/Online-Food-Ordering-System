@@ -212,3 +212,13 @@ CREATE TABLE platform_settings (
     setting_key VARCHAR(100) NOT NULL UNIQUE,
     setting_value VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE declined_assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    agent_id INT NOT NULL,
+    declined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (agent_id) REFERENCES delivery_agents(id) ON DELETE CASCADE
+);
