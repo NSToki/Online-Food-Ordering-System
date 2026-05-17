@@ -1,10 +1,17 @@
 <?php
 // This view only handles UI.
 // Database, session, and authentication logic stay in controller.
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $email = $email ?? "";
 $errors = $errors ?? [];
 $successMessage = $successMessage ?? "";
+
+if (isset($_SESSION["successMessage"])) {
+    $successMessage = $_SESSION["successMessage"];
+    unset($_SESSION["successMessage"]);
+}
 ?>
 
 <!DOCTYPE html>
@@ -200,7 +207,7 @@ $successMessage = $successMessage ?? "";
 
         <div class="bottom-text">
             Don’t have an account?
-            <a href="register.php">Register Here</a>
+            <a href="/Online-Food-Ordering-System/views/delivery_agent/register.php">Register Here</a>
         </div>
 
     </div>

@@ -1,10 +1,14 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $name = $name ?? "";
 $email = $email ?? "";
 $phone = $phone ?? "";
 $vehicle_type = $vehicle_type ?? "";
 $errors = $errors ?? [];
 $successMessage = $successMessage ?? "";
+
 ?>
 
 <!DOCTYPE html>
@@ -205,7 +209,7 @@ $successMessage = $successMessage ?? "";
 
     <div class="bottom-text">
         Already have an account?
-        <a href="login.php">Login Here</a>
+        <a href="/Online-Food-Ordering-System/views/delivery_agent/login.php">Login Here</a>
     </div>
 
 </div>
