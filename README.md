@@ -165,12 +165,3 @@ CREATE TABLE `orders` (
    ```
 
 ---
-
-## 📝 Viva Preparation & Code Study Guide
-Are you preparing for an academic presentation, code review, or oral exam?
-We have compiled an exhaustive **[customer/VIVA_GUIDE.md](file:///g:/XAMPP/htdocs/Food_Order/customer/VIVA_GUIDE.md)**!
-
-This guide includes:
-* **The Entire Consolidated Codebase** in a single file for high-speed scrolling and quick review.
-* **Extensive Theoretical Explanations** detailing the design choices, MVC architectures, and data security decisions.
-* **Oral Exam Questions & Answers** matching every source file to help you ace your evaluation.
