@@ -181,5 +181,120 @@ public function updateAgentProfile($user_id, $name, $phone, $vehicle_type, $curr
         return false;
     }
     }
+
+    public function getEarningsSummary($user_id) {
+
+    $agentSql = "SELECT id, total_earnings FROM delivery_agents WHERE user_id = ?";
+    $agentStmt = mysqli_prepare($this->conn, $agentSql);
+    mysqli_stmt_bind_param($agentStmt, "i", $user_id);
+    mysqli_stmt_execute($agentStmt);
+
+    $agentResult = mysqli_stmt_get_result($agentStmt);
+    $agent = mysqli_fetch_assoc($agentResult);
+    mysqli_stmt_close($agentStmt);
+
+    if (!$agent) {
+        return null;
+    }
+
+    $agent_id = $agent["id"];
+
+    $sql = "SELECT
+                SUM(CASE WHEN DATE(delivery_assignments.delivered_at) = CURDATE()
+                    THEN orders.delivery_fee ELSE 0 END) AS today_earnings,
+
+                SUM(CASE WHEN YEARWEEK(delivery_assignments.delivered_at, 1) = YEARWEEK(CURDATE(), 1)
+                    THEN orders.delivery_fee ELSE 0 END) AS week_earnings,
+
+                SUM(CASE WHEN MONTH(delivery_assignments.delivered_at) = MONTH(CURDATE())
+                    AND YEAR(delivery_assignments.delivered_at) = YEAR(CURDATE())
+                    THEN orders.delivery_fee ELSE 0 END) AS month_earnings,
+
+                SUM(orders.delivery_fee) AS all_time_earnings,
+
+                COUNT(orders.id) AS completed_deliveries
+
+            FROM orders
+            INNER JOIN delivery_assignments
+            ON orders.id = delivery_assignments.order_id
+
+            WHERE delivery_assignments.agent_id = ?
+            AND delivery_assignments.status = 'delivered'";
+
+    $stmt = mysqli_prepare($this->conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $agent_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $earnings = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+    return $earnings;
+    }
+
+    public function getPerformanceStats($user_id) {
+
+    $agentSql = "SELECT id, is_online FROM delivery_agents WHERE user_id = ?";
+    $agentStmt = mysqli_prepare($this->conn, $agentSql);
+    mysqli_stmt_bind_param($agentStmt, "i", $user_id);
+    mysqli_stmt_execute($agentStmt);
+
+    $agentResult = mysqli_stmt_get_result($agentStmt);
+    $agent = mysqli_fetch_assoc($agentResult);
+    mysqli_stmt_close($agentStmt);
+
+    if (!$agent) {
+        return null;
+    }
+
+    $agent_id = $agent["id"];
+
+    $sql = "SELECT
+                COUNT(delivery_assignments.id) AS total_completed,
+
+                AVG(
+                    TIMESTAMPDIFF(
+                        MINUTE,
+                        delivery_assignments.picked_up_at,
+                        delivery_assignments.delivered_at
+                    )
+                ) AS average_delivery_time
+
+            FROM delivery_assignments
+
+            WHERE agent_id = ?
+            AND status = 'delivered'
+            AND picked_up_at IS NOT NULL
+            AND delivered_at IS NOT NULL";
+
+    $stmt = mysqli_prepare($this->conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $agent_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $stats = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+
+    $complaintSql = "SELECT COUNT(id) AS total_complaints
+                     FROM complaints
+                     WHERE submitter_id = ?";
+
+    $complaintStmt = mysqli_prepare($this->conn, $complaintSql);
+    mysqli_stmt_bind_param($complaintStmt, "i", $user_id);
+    mysqli_stmt_execute($complaintStmt);
+
+    $complaintResult = mysqli_stmt_get_result($complaintStmt);
+    $complaints = mysqli_fetch_assoc($complaintResult);
+    mysqli_stmt_close($complaintStmt);
+
+    return [
+        "total_completed" => $stats["total_completed"] ?? 0,
+        "average_delivery_time" => round($stats["average_delivery_time"] ?? 0, 2),
+        "total_complaints" => $complaints["total_complaints"] ?? 0,
+        "is_online" => $agent["is_online"]
+    ];
+    }
+
 }
 ?>
