@@ -347,6 +347,79 @@ public function updateDeliveryStatus($order_id, $user_id, $new_status) {
 
         return $success;
     }
+    public function getDeliveryHistory($user_id) {
+
+    $agentSql = "SELECT id FROM delivery_agents WHERE user_id = ?";
+
+    $agentStmt = mysqli_prepare($this->conn, $agentSql);
+
+    mysqli_stmt_bind_param($agentStmt, "i", $user_id);
+
+    mysqli_stmt_execute($agentStmt);
+
+    $agentResult = mysqli_stmt_get_result($agentStmt);
+
+    $agent = mysqli_fetch_assoc($agentResult);
+
+    mysqli_stmt_close($agentStmt);
+
+    if (!$agent) {
+        return [];
+    }
+
+    $agent_id = $agent["id"];
+
+    $sql = "SELECT
+                orders.id AS order_id,
+                orders.delivery_address,
+                orders.delivery_fee,
+                orders.total_amount,
+                orders.status,
+                orders.created_at,
+
+                restaurants.name AS restaurant_name,
+                restaurants.city AS restaurant_city,
+
+                users.name AS customer_name,
+
+                delivery_assignments.assigned_at,
+                delivery_assignments.picked_up_at,
+                delivery_assignments.delivered_at
+
+            FROM orders
+
+            INNER JOIN restaurants
+            ON orders.restaurant_id = restaurants.id
+
+            INNER JOIN users
+            ON orders.customer_id = users.id
+
+            INNER JOIN delivery_assignments
+            ON orders.id = delivery_assignments.order_id
+
+            WHERE delivery_assignments.agent_id = ?
+            AND delivery_assignments.status = 'delivered'
+
+            ORDER BY delivery_assignments.delivered_at DESC";
+
+    $stmt = mysqli_prepare($this->conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "i", $agent_id);
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    $history = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $history[] = $row;
+    }
+
+    mysqli_stmt_close($stmt);
+
+    return $history;
+    }
 }
 
 ?>
