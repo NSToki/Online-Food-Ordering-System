@@ -1,4 +1,16 @@
 <?php
+<<<<<<< HEAD
+// Returns a mysqli connection — used by all models/controllers
+function getDB() {
+    $conn = new mysqli('localhost', 'root', '', 'online_food_ordering_system');
+    if ($conn->connect_error) {
+        die("DB connection failed: " . $conn->connect_error);
+    }
+    $conn->set_charset('utf8');
+    return $conn;
+}
+?>
+=======
 
 define('HOST', 'localhost');
 define('DB',   'online_food_ordering_system');
@@ -81,3 +93,4 @@ function getDB() {
 }
 
 ?>
+>>>>>>> 9bb968e893038428f2612d07b625b5f9a90736a4
