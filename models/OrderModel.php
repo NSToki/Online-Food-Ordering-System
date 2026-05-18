@@ -420,6 +420,55 @@ public function updateDeliveryStatus($order_id, $user_id, $new_status) {
 
     return $history;
     }
+    public function countAvailableOrders($user_id) {
+
+    $agentSql = "SELECT id FROM delivery_agents WHERE user_id = ?";
+
+    $agentStmt = mysqli_prepare($this->conn, $agentSql);
+
+    mysqli_stmt_bind_param($agentStmt, "i", $user_id);
+
+    mysqli_stmt_execute($agentStmt);
+
+    $agentResult = mysqli_stmt_get_result($agentStmt);
+
+    $agent = mysqli_fetch_assoc($agentResult);
+
+    mysqli_stmt_close($agentStmt);
+
+    if (!$agent) {
+        return 0;
+    }
+
+    $agent_id = $agent["id"];
+
+    $sql = "SELECT COUNT(orders.id) AS total_available
+
+            FROM orders
+
+            WHERE orders.status = 'ready'
+            AND orders.agent_id IS NULL
+
+            AND orders.id NOT IN (
+                SELECT order_id
+                FROM declined_assignments
+                WHERE agent_id = ?
+            )";
+
+    $stmt = mysqli_prepare($this->conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "i", $agent_id);
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    $data = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+    return $data["total_available"] ?? 0;
+    }
 }
 
 ?>

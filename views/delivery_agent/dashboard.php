@@ -147,12 +147,23 @@ mysqli_stmt_close($stmt);
             color: white;
             cursor: pointer;
         }
+        .notification {
+        display: none;
+        background: #28a745;
+        color: white;
+        padding: 14px;
+        border-radius: 5px;
+        margin-top: 15px;
+        font-weight: bold;
+        text-decoration: none;
+        }
 
 
     </style>
 </head>
 
 <body>
+    
 
     <div class="navbar">
         <h2>Delivery Agent Panel</h2>
@@ -165,6 +176,13 @@ mysqli_stmt_close($stmt);
             <h3>Welcome, <?php echo htmlspecialchars($name); ?></h3>
             <p>This is your delivery agent dashboard. Manage your deliveries, earnings, and profile from here.</p>
             <br>
+            <a href="available_orders.php"
+            id="assignmentNotification"
+            class="notification">
+
+                🔔 New delivery assignment available!
+
+            </a>
             <p>
                 Current Status:
                 <span id="onlineStatusText" class="status <?php echo $is_online == 1 ? 'online' : 'offline'; ?>">
@@ -175,7 +193,6 @@ mysqli_stmt_close($stmt);
             <?php echo $is_online == 1 ? "Go Offline" : "Go Online"; ?>
             </button>
         </div>
-
         <div class="card-area">
 
             <div class="card">
@@ -217,6 +234,15 @@ mysqli_stmt_close($stmt);
         </div>
 
     </div>
+    <script>
+
+    checkNewAssignments();
+
+    setInterval(function () {
+        checkNewAssignments();
+    }, 5000);
+
+    </script>
 
 </body>
 </html>
