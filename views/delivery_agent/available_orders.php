@@ -24,6 +24,7 @@ unset($_SESSION["errorMessage"]);
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="../../assets/js/delivery_agent_ajax.js"></script>
     <title>Available Assignments</title>
 
     <style>
@@ -191,13 +192,13 @@ unset($_SESSION["errorMessage"]);
                 </div>
 
                 <div class="btn-row">
-                    <a class="accept-btn" href="../../api/delivery_agent/accept_order.php?order_id=<?php echo htmlspecialchars($order["order_id"]); ?>">
-                        Accept Assignment
-                    </a>
+                    <button class="accept-btn" onclick="acceptOrder(<?php echo (int)$order['order_id']; ?>)">
+                    Accept Assignment
+                    </button>
 
-                    <a class="decline-btn" href="../../api/delivery_agent/decline_order.php?order_id=<?php echo htmlspecialchars($order["order_id"]); ?>">
-                        Decline
-                    </a>
+                    <button class="decline-btn" onclick="declineOrder(<?php echo (int)$order['order_id']; ?>)">
+                    Decline
+                    </button>
                 </div>
             </div>
         <?php endforeach; ?>

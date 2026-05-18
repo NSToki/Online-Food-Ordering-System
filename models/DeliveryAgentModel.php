@@ -276,12 +276,14 @@ public function updateAgentProfile($user_id, $name, $phone, $vehicle_type, $curr
     $stats = mysqli_fetch_assoc($result);
     mysqli_stmt_close($stmt);
 
-    $complaintSql = "SELECT COUNT(id) AS total_complaints
+    $complaintSql = "SELECT COUNT(complaints.id) AS total_complaints
                      FROM complaints
-                     WHERE submitter_id = ?";
+                     INNER JOIN orders ON complaints.submitter_id = orders.customer_id
+                     WHERE orders.agent_id = ?";
 
+    $agentIdForComplaints = $agent_id; // use agent_id (delivery_agents.id)
     $complaintStmt = mysqli_prepare($this->conn, $complaintSql);
-    mysqli_stmt_bind_param($complaintStmt, "i", $user_id);
+    mysqli_stmt_bind_param($complaintStmt, "i", $agentIdForComplaints);
     mysqli_stmt_execute($complaintStmt);
 
     $complaintResult = mysqli_stmt_get_result($complaintStmt);
@@ -296,5 +298,23 @@ public function updateAgentProfile($user_id, $name, $phone, $vehicle_type, $curr
     ];
     }
 
+    public function getOnlineStatus($user_id) {
+    $sql = "SELECT is_online FROM delivery_agents WHERE user_id = ?";
+
+    $stmt = mysqli_prepare($this->conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $agent = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+    if ($agent) {
+        return $agent["is_online"];
+    }
+
+    return 0;
+    }
 }
 ?>

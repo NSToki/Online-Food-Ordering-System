@@ -14,6 +14,7 @@ $successMessage = $successMessage ?? "";
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="../../assets/js/delivery_agent_validation.js"></script>
     <title>Delivery Agent Register</title>
 
     <style>
@@ -126,7 +127,7 @@ $successMessage = $successMessage ?? "";
 
     <form id="registerForm"
           action="../../controllers/DeliveryAgentController.php?action=register"
-          method="post">
+          method="post" onsubmit="return validateRegisterForm();" >
 
         <div class="form-group">
             <label>Full Name</label>
@@ -213,89 +214,6 @@ $successMessage = $successMessage ?? "";
     </div>
 
 </div>
-
-<script>
-    document.getElementById("registerForm").addEventListener("submit", function(event){
-
-        let isValid = true;
-
-        let name = document.getElementById("name").value.trim();
-        let email = document.getElementById("email").value.trim();
-        let phone = document.getElementById("phone").value.trim();
-        let vehicle = document.getElementById("vehicle_type").value;
-        let password = document.getElementById("password").value;
-        let confirmPassword = document.getElementById("confirm_password").value;
-
-        document.getElementById("nameError").innerHTML = "";
-        document.getElementById("emailError").innerHTML = "";
-        document.getElementById("phoneError").innerHTML = "";
-        document.getElementById("vehicleError").innerHTML = "";
-        document.getElementById("passwordError").innerHTML = "";
-        document.getElementById("confirmPasswordError").innerHTML = "";
-
-        let namePattern = /^[A-Za-z ]+$/;
-        let phonePattern = /^[0-9]{10,15}$/;
-
-        if(name === ""){
-            document.getElementById("nameError").innerHTML = "Name is required";
-            isValid = false;
-        }
-        else if(!namePattern.test(name)){
-            document.getElementById("nameError").innerHTML = "Only letters and spaces allowed";
-            isValid = false;
-        }
-
-        if(email === ""){
-            document.getElementById("emailError").innerHTML = "Email is required";
-            isValid = false;
-        }
-        else if(!email.includes("@") || !email.includes(".")){
-            document.getElementById("emailError").innerHTML = "Enter valid email";
-            isValid = false;
-        }
-
-        if(phone === ""){
-            document.getElementById("phoneError").innerHTML = "Phone is required";
-            isValid = false;
-        }
-        else if(!phonePattern.test(phone)){
-            document.getElementById("phoneError").innerHTML = "Phone must be 10 to 15 digits";
-            isValid = false;
-        }
-
-        if(vehicle === ""){
-            document.getElementById("vehicleError").innerHTML = "Vehicle type is required";
-            isValid = false;
-        }
-
-        if(password === ""){
-            document.getElementById("passwordError").innerHTML = "Password is required";
-            isValid = false;
-        }
-        else if(password.length < 8){
-            document.getElementById("passwordError").innerHTML = "Password must be at least 8 characters";
-            isValid = false;
-        }
-        else if(!password.includes("@") && !password.includes("#") && !password.includes("$") && !password.includes("%")){
-            document.getElementById("passwordError").innerHTML = "Password must contain @, #, $, or %";
-            isValid = false;
-        }
-
-        if(confirmPassword === ""){
-            document.getElementById("confirmPasswordError").innerHTML = "Confirm password is required";
-            isValid = false;
-        }
-        else if(password !== confirmPassword){
-            document.getElementById("confirmPasswordError").innerHTML = "Passwords do not match";
-            isValid = false;
-        }
-
-        if(!isValid){
-            event.preventDefault();
-        }
-
-    });
-</script>
 
 </body>
 </html>

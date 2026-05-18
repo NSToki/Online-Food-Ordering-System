@@ -98,53 +98,62 @@ function updateDeliveryStatus(newStatus) {
 let previousOrderCount = null;
 
 function checkNewAssignments() {
-
     let xhr = new XMLHttpRequest();
 
-    xhr.open(
-        "GET",
-        "../../api/delivery_agent/notifications.php",
-        true
-    );
+    xhr.open("GET", "../../api/delivery_agent/notifications.php", true);
 
     xhr.onload = function () {
-
         if (xhr.status === 200) {
-
             let response = JSON.parse(xhr.responseText);
 
             if (response.success) {
-
                 let currentCount = parseInt(response.count);
+                let notificationBox = document.getElementById("assignmentNotification");
 
-                if (
-                    previousOrderCount !== null &&
-                    currentCount > previousOrderCount
-                ) {
-
-                    let notificationBox =
-                        document.getElementById(
-                            "assignmentNotification"
-                        );
-
-                    if (notificationBox) {
-
-                        notificationBox.style.display = "block";
-
-                    notificationBox.innerHTML =
-                        "🔔 " + currentCount + " New Assignment Available!";
-                        setTimeout(function () {
-
-                            notificationBox.style.display = "none";
-
-                        }, 60000);
+                if (notificationBox) {
+                    if (currentCount > 0) {
+                        notificationBox.style.display = "inline-block";
+                        notificationBox.innerHTML = "🔔 " + currentCount + " Available Assignment(s)";
+                    } else {
+                        notificationBox.style.display = "none";
                     }
                 }
-
-                previousOrderCount = currentCount;
             }
         }
     };
 
     xhr.send();
+}
+
+function acceptOrder(orderId) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "../../api/delivery_agent/accept_order.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                alert(response.message);
+                window.location.href = "active_delivery.php";
+            } else {
+                alert(response.message);
+                location.reload();
+            }
+        }
+    };
+    xhr.send("order_id=" + orderId);
+}
+
+function declineOrder(orderId) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "../../api/delivery_agent/decline_order.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            alert(response.message);
+            location.reload();
+        }
+    };
+    xhr.send("order_id=" + orderId);
 }

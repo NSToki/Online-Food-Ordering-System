@@ -11,20 +11,10 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "agent") {
 $name = $_SESSION["name"] ?? "Delivery Agent";
 
 require_once "../../food_ordering_db/connection.php";
+require_once "../../models/DeliveryAgentModel.php";
 
-$user_id = $_SESSION["user_id"];
-
-$sql = "SELECT is_online FROM delivery_agents WHERE user_id = ?";
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-
-$result = mysqli_stmt_get_result($stmt);
-$agent = mysqli_fetch_assoc($result);
-
-$is_online = $agent["is_online"] ?? 0;
-
-mysqli_stmt_close($stmt);
+$agentModel = new DeliveryAgentModel($conn);
+$is_online = $agentModel->getOnlineStatus($_SESSION["user_id"]);
 
 ?>
 
@@ -97,6 +87,12 @@ mysqli_stmt_close($stmt);
             border-radius: 10px;
             box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
             text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            min-height: 220px;
         }
 
         .card h3{
@@ -117,6 +113,9 @@ mysqli_stmt_close($stmt);
             color: white;
             padding: 9px 14px;
             border-radius: 5px;
+
+            margin-top: auto;
+            align-self: center;
         }
 
         .card a:hover{
@@ -183,6 +182,8 @@ mysqli_stmt_close($stmt);
                 🔔 New delivery assignment available!
 
             </a>
+            <br>
+            <br>
             <p>
                 Current Status:
                 <span id="onlineStatusText" class="status <?php echo $is_online == 1 ? 'online' : 'offline'; ?>">

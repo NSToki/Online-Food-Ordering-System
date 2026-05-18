@@ -18,6 +18,7 @@ if (isset($_SESSION["successMessage"])) {
 <html>
 
 <head>
+    <script src="../../assets/js/delivery_agent_validation.js"></script>
     <title>Delivery Agent Login</title>
 
     <style>
@@ -150,7 +151,7 @@ if (isset($_SESSION["successMessage"])) {
 
         <form id="loginForm"
               action="../../controllers/DeliveryAgentController.php?action=login"
-              method="post">
+              method="post" onsubmit="return validateLoginForm();">
 
             <div class="form-group">
 
@@ -209,52 +210,7 @@ if (isset($_SESSION["successMessage"])) {
             Don’t have an account?
             <a href="/Online-Food-Ordering-System/views/delivery_agent/register.php">Register Here</a>
         </div>
-
     </div>
-
-    <script>
-
-        document.getElementById("loginForm").addEventListener("submit", function(event){
-
-            let isValid = true;
-
-            let email = document.getElementById("email").value.trim();
-            let password = document.getElementById("password").value.trim();
-
-            let emailError = document.getElementById("emailError");
-            let passwordError = document.getElementById("passwordError");
-
-            emailError.innerHTML = "";
-            passwordError.innerHTML = "";
-
-            // Email Validation
-            if(email === ""){
-                emailError.innerHTML = "Email is required";
-                isValid = false;
-            }
-            else if(!email.includes("@") || !email.includes(".")){
-                emailError.innerHTML = "Enter valid email";
-                isValid = false;
-            }
-
-            // Password Validation
-            if(password === ""){
-                passwordError.innerHTML = "Password is required";
-                isValid = false;
-            }
-            else if(password.length < 8){
-                passwordError.innerHTML = "Password must be at least 8 characters";
-                isValid = false;
-            }
-
-            if(!isValid){
-                event.preventDefault();
-            }
-
-        });
-
-    </script>
-
 </body>
 
 </html>
