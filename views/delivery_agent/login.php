@@ -18,7 +18,7 @@ if (isset($_SESSION["successMessage"])) {
 <html>
 
 <head>
-    <script src="../../assets/js/delivery_agent_validation.js"></script>
+    <script src="/Online-Food-Ordering-System/assets/js/delivery_agent_validation.js"></script>
     <title>Delivery Agent Login</title>
 
     <style>
@@ -150,7 +150,7 @@ if (isset($_SESSION["successMessage"])) {
         <?php endif; ?>
 
         <form id="loginForm"
-              action="../../controllers/DeliveryAgentController.php?action=login"
+              action="/Online-Food-Ordering-System/controllers/DeliveryAgentController.php?action=login"
               method="post" onsubmit="return validateLoginForm();">
 
             <div class="form-group">
